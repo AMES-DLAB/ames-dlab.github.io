@@ -1,19 +1,33 @@
 import json
 
-print("Loading all_metadata.json...")
+# Load JSON
 with open("all_metadata.json", "r") as f:
     data = json.load(f)
-print("Loaded JSON successfully.")
 
-headers = ["Submodule", "Key", "Value"]
+# Get all possible keys
+all_keys = set()
+for meta in data.values():
+    all_keys.update(meta.keys())
+all_keys = sorted(all_keys)
+
+# Create table header
+headers = ["Submodule"] + list(all_keys)
 table_lines = ["| " + " | ".join(headers) + " |",
                "| " + " | ".join(["---"] * len(headers)) + " |"]
 
+# Create one row per submodule
 for submodule, metadata in data.items():
-    for key, value in metadata.items():
-        table_lines.append(f"| {submodule} | {key} | {value} |")
+    row = [submodule]
+    for key in all_keys:
+        value = metadata.get(key, "")
+        # Format lists/dicts as compact JSON strings
+        if isinstance(value, (dict, list)):
+            value = json.dumps(value, separators=(",", ": "))
+        row.append(str(value))
+    table_lines.append("| " + " | ".join(row) + " |")
 
-print("Writing metadata_table.md...")
+# Save to markdown
 with open("metadata_table.md", "w") as f:
     f.write("\n".join(table_lines))
-print("Done.")
+
+print("✅ metadata_table.md has been generated in table (row-per-submodule) format.")
