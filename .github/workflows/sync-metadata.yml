@@ -33,7 +33,7 @@ jobs:
 
       - name: Copy metadata file
         run: |
-          cp temp-repo/all_metadata.json all_metadata.json
+          cp temp-source/all_metadata.json all_metadata.json
 
 
       - name: Remove temp-source folder
